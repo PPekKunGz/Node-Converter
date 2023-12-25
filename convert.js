@@ -26,22 +26,53 @@ fs.readdir(inputDir, (err, files) => {
   });
 
   // Convert each audio file to OGG format
+  var index = 1;
   audioFiles.forEach((file) => {
     const inputFile = path.join(inputDir, file);
-    const outputFileName = `${path.parse(file).name}_music_sound.ogg`;
+    // const outputFileName = `${path.parse(file).name}_music_sound.ogg`;
+    const outputFileName = `life_${index}_music_sound.ogg`;
     const outputFile = path.join(outputDir, outputFileName);
+    index++;
 
-    ffmpeg(inputFile)
-      .outputOptions("-c:a libvorbis") // Set the audio codec to libvorbis (OGG)
-      .outputOption("-ac", 1) // Set to mono
-      .outputOption("-ar", 44100) // Sample Rate to 44.1 kHz
-      .toFormat("ogg") // Set the output format to OGG
-      .on("end", () => {
-        console.log(`Conversion of ${file} finished`);
-      })
-      .on("error", (err) => {
-        console.error(`Error converting ${file}:`, err);
-      })
-      .save(outputFile);
+    ffmpeg.ffprobe(inputFile, (err, metadata) => {
+      if (err) {
+        console.error(`Error getting duration for ${file}:`, err);
+        return;
+      }
+
+      const durationInSeconds = metadata.format.duration;
+
+      // Perform the conversion with the obtained duration information
+      ffmpeg(inputFile)
+        .outputOptions("-c:a libvorbis") // Set the audio codec to libvorbis (OGG)
+        .outputOption("-ac", 1) // Set to mono
+        .outputOption("-ar", 44100) // Sample Rate to 44.1 kHz
+        .toFormat("ogg") // Set the output format to OGG
+        .on("end", () => {
+          console.log(
+            `Conversion of ${file} finished | ${outputFile} | Duration: ${
+              durationInSeconds + 5
+            } seconds`
+          );
+        })
+        .on("error", (err) => {
+          console.error(`Error converting ${file}:`, err);
+        })
+        .save(outputFile);
+    });
+
+    // ffmpeg(inputFile)
+    //   .outputOptions("-c:a libvorbis") // Set the audio codec to libvorbis (OGG)
+    //   .outputOption("-ac", 1) // Set to mono
+    //   .outputOption("-ar", 44100) // Sample Rate to 44.1 kHz
+    //   .toFormat("ogg") // Set the output format to OGG
+    //   .on("end", () => {
+    //     console.log(`Conversion of ${file} finished | ${}`);
+
+    //   })
+    //   .on("error", (err) => {
+    //     console.error(`Error converting ${file}:`, err);
+    //   })
+    //   .save(outputFile);
   });
 });
