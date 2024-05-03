@@ -23,7 +23,7 @@ https://ffmpeg.org/download.html
 Download FFmpeg with **winget**
 ```js
 winget search ffmpeg
-winget install <package-name>
+winget install --id=Gyan.FFmpeg.Shared -v "6.0" -e
 ```
 
 # How to use this.
