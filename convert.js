@@ -51,8 +51,8 @@ fs.readdir(inputDir, (err, files) => {
         .on("end", () => {
           console.log(
             `Conversion of ${file} finished | ${outputFile} | Duration: ${
-              durationInSeconds + 5
-            } seconds`
+              (durationInSeconds + 5) * 20
+            } Ticks*20 - Second/20`
           );
         })
         .on("error", (err) => {
